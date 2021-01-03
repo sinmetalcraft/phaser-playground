@@ -2,6 +2,9 @@ import 'phaser';
 
 export default class Demo extends Phaser.Scene
 {
+    rt: any;
+    layer: any;
+
     constructor ()
     {
         super('demo');
@@ -9,30 +12,26 @@ export default class Demo extends Phaser.Scene
 
     preload ()
     {
-        this.load.image('logo', 'assets/phaser3-logo.png');
-        this.load.image('libs', 'assets/libs.png');
-        this.load.glsl('bundle', 'assets/plasma-bundle.glsl.js');
-        this.load.glsl('stars', 'assets/starfields.glsl.js');
+        this.load.image('tiles', 'assets/tilemaps/tiles/tmw_desert_spacing.png');
+        this.load.tilemapTiledJSON('map', 'assets/tilemaps/maps/desert.json');
     }
 
     create ()
     {
-        this.add.shader('RGB Shift Field', 0, 0, 800, 600).setOrigin(0);
+        var map = this.make.tilemap({ key: 'map' });
 
-        this.add.shader('Plasma', 0, 412, 800, 172).setOrigin(0);
+        var tiles = map.addTilesetImage('Desert', 'tiles');
 
-        this.add.image(400, 300, 'libs');
+        this.layer = map.createLayer('Ground', tiles, 0, 0).setVisible(false);
 
-        const logo = this.add.image(400, 70, 'logo');
+        this.rt = this.add.renderTexture(0, 0, 800, 600);
+    }
 
-        this.tweens.add({
-            targets: logo,
-            y: 350,
-            duration: 1500,
-            ease: 'Sine.inOut',
-            yoyo: true,
-            repeat: -1
-        })
+    update ()
+    {
+        this.rt.clear();
+
+        this.rt.draw(this.layer);
     }
 }
 
