@@ -3,7 +3,7 @@ import 'phaser';
 export default class Demo extends Phaser.Scene
 {
     rt: any;
-    layer: any;
+    layer: Phaser.Tilemaps.TilemapLayer;
     ship: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
@@ -27,14 +27,15 @@ export default class Demo extends Phaser.Scene
         this.cursors = this.input.keyboard.createCursorKeys();
 
         var map = this.make.tilemap({ key: 'map' });
-        var tiles = map.addTilesetImage('Desert', 'tiles');
-        this.layer = map.createLayer('Ground', tiles, 0, 0).setVisible(false);
-        // this.layer = map.createLayer('Ground', tiles, 0, 0);
+        var tiles = map.addTilesetImage('Desert', 'tiles'); // Desert は desert2.jsonで指定してるtilesetの名前
+        this.layer = map.createLayer('Ground', tiles, 0, 0).setVisible(false); // Ground はdesert2.jsonで指定してるlayerの名前
+        this.layer.setCollisionBetween(32, 32); // 32番のタイル (石)にはぶつかるようになる
 
         this.rt = this.add.renderTexture(0, 0, 1600, 1200);
 
-        // this.ship = this.add.image(32, 32, 'car').setAngle(90).setX(400).setY(300);
         this.ship = this.physics.add.image(32, 32, 'car').setX(400).setY(300).setAngle(90).setCollideWorldBounds(true);
+
+        this.physics.add.collider(this.ship, this.layer);
 
         this.cameras.main.startFollow(this.ship, true, 1, 1);
     }
